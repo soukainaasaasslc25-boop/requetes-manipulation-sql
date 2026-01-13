@@ -95,6 +95,9 @@ INSERT INTO auteur (nom, prenom) VALUES
 INSERT INTO lecteur (nom, prenom, email, tel, cin) VALUES 
 ('Alaoui', 'Ahmed', 'ahmed@email.com', '0601020304', 'AB12345'),
 ('Dupont', 'Marie', 'marie@email.com', '0611223344', 'CD67890');
+INSERT INTO lecteur (nom, prenom, email, tel, cin) 
+VALUES ('oumayma', 'uhhabi', 'oumamaa@email.com', '0603090704', 'AZ2345');
+
 
 -- Insertion dans OUVRAGE (Lié au rayon_id)
 INSERT INTO ouvrage (titre, annee_publication, rayon_id) VALUES 
@@ -139,7 +142,7 @@ ORDER BY annee_publication DESC;
 select * from emprunt;
 select * from emprunt where date_retour_effective is null;
 
-select titre,r.nom as nom_rayon  from ouvrage join rayon r on ouvrage.rayon_id= r.rayon_id;
+select titre,r.nom ,ouvrage.rayon_id, r.rayon_id from ouvrage join rayon r on ouvrage.rayon_id= r.rayon_id;
 
 select titre ,a.nom,a.prenom from ouvrage join  ouvrage_auteur oa on ouvrage.ouvrage_id=oa.ouvrage_id
 join auteur a on oa.auteur_id=a.auteur_id;
@@ -170,14 +173,32 @@ FROM lecteur l
 LEFT JOIN emprunt e ON l.lecteur_id = e.lecteur_id
 WHERE e.emprunt_id IS NULL;
 
-delete from lecteur where lecteur_id=2;
+delete from lecteur where lecteur_id = 5;
 
-SELECT o.ouvrage_id, o.titre, o.annee_publication
-FROM ouvrage o
-LEFT JOIN emprunt e ON o.ouvrage_id = e.ouvrage_id
-WHERE e.emprunt_id IS NULL;
 
-delete from ouvrage where lecteur_id in(2,3);
+DELETE FROM lecteur 
+WHERE lecteur_id IN (
+    SELECT id_a_supprimer FROM (
+        SELECT l.lecteur_id AS id_a_supprimer
+        FROM lecteur l 
+        LEFT JOIN emprunt e ON l.lecteur_id = e.lecteur_id 
+        WHERE e.emprunt_id IS NULL
+    ) AS table_temporaire
+);
+
+
+
+DELETE FROM ouvrage 
+WHERE ouvrage_id IN (
+    SELECT id_a_supprimer FROM (
+        SELECT o.ouvrage_id AS id_a_supprimer
+        FROM ouvrage o
+        LEFT JOIN emprunt e ON o.ouvrage_id = e.ouvrage_id
+        WHERE e.emprunt_id IS NULL
+    ) AS sousR
+);
+
+
 
 select * from ouvrage ;
 select * from personnel;
