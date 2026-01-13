@@ -1,5 +1,5 @@
 CREATE DATABASE libraryR;
-USE library;
+USE libraryR;
 
 -- =====================
 -- TABLE RAYON
