@@ -105,7 +105,8 @@ INSERT INTO ouvrage (titre, annee_publication, rayon_id) VALUES
 ('Dune', 1965, 2),            -- 2 = Science-Fiction
 ('Atomic Habits', 2018, 3);   -- 3 = Dév Personnel
 
-
+select * from ouvrage where ouvrage_id=1;
+delete from ouvrage where ouvrage_id=1;
 INSERT IGNORE INTO ouvrage_auteur (ouvrage_id, auteur_id) VALUES (1, 1), (2, 2), (3, 3), (4, 1);
 select * from ouvrage_auteur;
 -- Insertion dans EMPRUNT (Lecteur 1 emprunte l'ouvrage 1)
@@ -154,9 +155,11 @@ select r.rayon_id, count(*) from ouvrage join rayon r on ouvrage.rayon_id= r.ray
 
 update lecteur set email='fati@gmail.com' where lecteur_id=1;
 update lecteur set tel=076543213 where cin='CD67890';
+
 UPDATE ouvrage 
 SET rayon_id = 3 
 WHERE ouvrage_id = 2;
+
 UPDATE emprunt 
 SET date_retour_effective = '2029-01-01' 
 WHERE emprunt_id = 1;
@@ -188,19 +191,26 @@ WHERE lecteur_id IN (
 
 
 
-DELETE FROM ouvrage 
-WHERE ouvrage_id IN (
-    SELECT id_a_supprimer FROM (
-        SELECT o.ouvrage_id AS id_a_supprimer
-        FROM ouvrage o
-        LEFT JOIN emprunt e ON o.ouvrage_id = e.ouvrage_id
-        WHERE e.emprunt_id IS NULL
-    ) AS sousR
-);
+START TRANSACTION;
 
+
+DELETE FROM ouvrage_auteur 
+WHERE ouvrage_id NOT IN (SELECT ouvrage_id FROM emprunt);
+
+
+DELETE FROM ouvrage 
+WHERE ouvrage_id NOT IN (SELECT ouvrage_id FROM emprunt);
+
+
+COMMIT;
+INSERT INTO ouvrage (titre, annee_publication, rayon_id) 
+VALUES ('The Clean Coder', 2011, 1);
+INSERT INTO ouvrage_auteur (ouvrage_id, auteur_id) 
+VALUES (14, 1);
 
 
 select * from ouvrage ;
+select * from ouvrage_auteur;
 select * from personnel;
 select * from emprunt;
 select * from lecteur;
