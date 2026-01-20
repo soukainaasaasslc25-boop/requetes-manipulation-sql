@@ -236,13 +236,13 @@ FOR EACH ROW
 BEGIN
     DECLARE total INT;
 
-    -- Correction : Ajout du point (.) après NEW
+
     SELECT COUNT(*) INTO total
     FROM emprunt
     WHERE lecteur_id = NEW.lecteur_id 
     AND date_retour_effective IS NULL;
 
-    -- Correction : Utilisation de MESSAGE_TEXT au lieu de MESSAGE
+
     IF total >= 3 THEN 
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Erreur : Ce lecteur a déjà 3 emprunts en cours !';
